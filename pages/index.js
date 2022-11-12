@@ -37,11 +37,21 @@ export default HomePage;
 // }
 
 const StyledHeader = styled.div`
-  img {
+  .userPhoto {
     margin-top:50px;
     width: 80px;
     height: 80px;
     border-radius: 50%;
+  }
+
+
+.section-Banner{
+  background-size: cover;
+}
+  
+  .banner-img{
+    width: 100%;
+    height: 250px;
   }
 
   .user-info {
@@ -56,10 +66,13 @@ const StyledHeader = styled.div`
 function Header() {
   return (
     <StyledHeader>
-      {/* <img src="banner"/> */}
+    <section className="section-Banner" >
+           <img className="banner-img" src="https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8YmFubmVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=400&q=60"/>
+    </section>
+      
 
       <section className="user-info">
-        <img src={`https://github.com/${config.github}.png`} />
+        <img className="userPhoto" src={`https://github.com/${config.github}.png`} />
         <div>
           <h2>{config.nome}</h2>
           <p>{config.job}</p>
