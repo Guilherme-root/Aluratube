@@ -1,3 +1,4 @@
+import React from "react";
 import config from "../config.json";
 import styled from "styled-components";
 import { validateConfig } from "next/dist/server/config-shared";
@@ -6,27 +7,33 @@ import Menu from "../src/components/Menu";
 import { StyledTimeline } from "../src/components/Timeline";
 
 function HomePage() {
-  const estilosDaHomePage = { 
-    // backgroundColor: "Red" 
-};
+  const estilosDaHomePage = {
+    // backgroundColor: "Red"
+  };
 
+  const [valorDoFiltro, setValorDoFiltro] = React.useState("");
   // console.log(config.playlist);
-    //o CSSReset serve pra resetar as config padrões 
+  //o CSSReset serve pra resetar as config padrões
   return (
     <>
-    <CSSReset/> 
-     <div style={{
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-                // backgroundColor: "red",
-            }}>
-        <Menu />
+      <CSSReset />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          // backgroundColor: "red",
+        }}
+      >
+        {/* prop Drilling */}
+        <Menu
+          valorDoFiltro={valorDoFiltro}
+          setValorDoFiltro={setValorDoFiltro}
+        />
         <Header />
-        <TimeLine playlists={config.playlists} />
-     </div>
+        <TimeLine searchValue={valorDoFiltro} playlists={config.playlists} />
+      </div>
     </>
-        
   );
 }
 
@@ -38,20 +45,13 @@ export default HomePage;
 
 const StyledHeader = styled.div`
   .userPhoto {
-    margin-top:50px;
     width: 80px;
     height: 80px;
     border-radius: 50%;
   }
 
-
-.section-Banner{
-  background-size: cover;
-}
-  
-  .banner-img{
-    width: 100%;
-    height: 250px;
+  .section-Banner {
+    background-size: cover;
   }
 
   .user-info {
@@ -62,17 +62,23 @@ const StyledHeader = styled.div`
     gap: 16px;
   }
 `;
+const StyledBanner = styled.div`
+  height: 230px;
+  background-image: url(${({ bg }) => bg});
+  /* background-image: url(${config.bg}); */
+`;
 
 function Header() {
   return (
     <StyledHeader>
-    <section className="section-Banner" >
-           <img className="banner-img" src="https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8YmFubmVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=400&q=60"/>
-    </section>
-      
+      <StyledBanner bg={config.bg} />
+      <section className="section-Banner"></section>
 
       <section className="user-info">
-        <img className="userPhoto" src={`https://github.com/${config.github}.png`} />
+        <img
+          className="userPhoto"
+          src={`https://github.com/${config.github}.png`}
+        />
         <div>
           <h2>{config.nome}</h2>
           <p>{config.job}</p>
@@ -82,7 +88,7 @@ function Header() {
   );
 }
 
-function TimeLine(props) {
+function TimeLine({ searchValue, ...props }) {
   // console.log("Dentro do componentes", props.playlists);
   const playlistsNames = Object.keys(props.playlists);
   // Statement
@@ -93,20 +99,26 @@ function TimeLine(props) {
     <StyledTimeline>
       {playlistsNames.map((playlistName) => {
         const videos = props.playlists[playlistName];
-        console.log(playlistName);
-        console.log(videos);
+
         return (
-          <section>
+          <section key={playlistName}>
             <h2>{playlistName}</h2>
             <div>
-              {videos.map((video) => {
-                return (
-                  <a href={video.url}>
-                    <img src={video.thumb} />
-                    <span>{video.title}</span>
-                  </a>
-                );
-              })}
+              {videos
+                .filter((video) => {
+                  const titleNormalized = video.title.toLowerCase();
+                  const searchValueNormalized = searchValue.toLowerCase();
+
+                  return titleNormalized.includes(searchValueNormalized);
+                })
+                .map((video) => {
+                  return (
+                    <a key={video.url} href={video.url}>
+                      <img src={video.thumb} />
+                      <span>{video.title}</span>
+                    </a>
+                  );
+                })}
             </div>
           </section>
         );
